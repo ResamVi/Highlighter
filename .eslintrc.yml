@@ -5,11 +5,13 @@ extends:
   - eslint:recommended
   - plugin:import/recommended
 globals:
+  browser: readonly
   chrome: readonly
   $: readonly
 ignorePatterns:
   - lib/*
   - config/*
+  - dist/*
 parserOptions:
   ecmaVersion: 12
   sourceType: "module"

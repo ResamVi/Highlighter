@@ -7,7 +7,7 @@ function highlightOnSelection() {
     const selectionString = selection.toString();
 
     if (selectionString) { // If there is text selected
-        chrome.runtime.sendMessage({ action: 'highlight' });
+        browser.runtime.sendMessage({ action: 'highlight' });
     }
 }
 
@@ -19,7 +19,7 @@ function toggleHighlighterCursor() {
     showHighlighterCursor = !showHighlighterCursor;
 
     if (showHighlighterCursor) {
-        document.body.style.cursor = `url(${chrome.runtime.getURL('images/cursor.png')}), auto`;
+        document.body.style.cursor = `url(${browser.runtime.getURL('images/cursor.png')}), auto`;
 
         // Highlight right away if some text is already selected:
         highlightOnSelection();

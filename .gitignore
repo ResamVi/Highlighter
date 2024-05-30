@@ -1,10 +1,7 @@
 *.crx
 .idea/
-
-config/secrets.js
-config/secrets.production.js
+.parcel-cache/
 
 node_modules/
 releases/
-
-.ds_store
+dist/

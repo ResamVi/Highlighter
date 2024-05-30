@@ -2,12 +2,13 @@ import { addHighlightError } from './errorManager.js';
 
 import { highlight } from '../highlight/index.js';
 
-const STORE_FORMAT_VERSION = chrome.runtime.getManifest().version;
+const STORE_FORMAT_VERSION = browser.runtime.getManifest().version;
 
-let alternativeUrlIndexOffset = 0; // Number of elements stored in the alternativeUrl Key. Used to map highlight indices to correct key
+// TODO: Still needed?
+const alternativeUrlIndexOffset = 0; // Number of elements stored in the alternativeUrl Key. Used to map highlight indices to correct key
 
 async function store(selection, container, url, href, color, textColor) {
-    const { highlights } = await chrome.storage.local.get({ highlights: {} });
+    const { highlights } = await browser.storage.sync.get({ highlights: {} });
 
     if (!highlights[url]) highlights[url] = [];
 
@@ -25,14 +26,14 @@ async function store(selection, container, url, href, color, textColor) {
         uuid: crypto.randomUUID(),
         createdAt: Date.now(),
     });
-    chrome.storage.local.set({ highlights });
+    browser.storage.sync.set({ highlights });
 
     // Return the index of the new highlight:
     return count - 1 + alternativeUrlIndexOffset;
 }
 
 async function update(highlightIndex, url, alternativeUrl, newColor, newTextColor) {
-    const { highlights } = await chrome.storage.local.get({ highlights: {} });
+    const { highlights } = await browser.storage.sync.get({ highlights: {} });
 
     let urlToUse = url;
     let indexToUse = highlightIndex - alternativeUrlIndexOffset;
@@ -48,25 +49,14 @@ async function update(highlightIndex, url, alternativeUrl, newColor, newTextColo
             highlightObject.color = newColor;
             highlightObject.textColor = newTextColor;
             highlightObject.updatedAt = Date.now();
-            chrome.storage.local.set({ highlights });
+            browser.storage.sync.set({ highlights });
         }
     }
 }
 
-// alternativeUrl is optional
-async function loadAll(url, alternativeUrl) {
-    const result = await chrome.storage.local.get({ highlights: {} });
-    let highlights = [];
-
-    // Because of a bug in an older version of the code, some highlights were stored
-    // using a key that didn't correspond to the full page URL. To fix this, if the
-    // alternativeUrl exists, try to load highlights from there as well
-    if (alternativeUrl) {
-        highlights = highlights.concat(result.highlights[alternativeUrl] || []);
-    }
-    alternativeUrlIndexOffset = highlights.length;
-
-    highlights = highlights.concat(result.highlights[url] || []);
+async function getAll(url) {
+    const result = await browser.storage.sync.get({ highlights: {} });
+    const highlights = result.highlights[url];
 
     if (!highlights) return;
 
@@ -103,7 +93,7 @@ function load(highlightVal, highlightIndex, noErrorTracking) {
 }
 
 async function removeHighlight(highlightIndex, url, alternativeUrl) {
-    const { highlights } = await chrome.storage.local.get({ highlights: {} });
+    const { highlights } = await browser.storage.sync.get({ highlights: {} });
 
     if (highlightIndex < alternativeUrlIndexOffset) {
         highlights[alternativeUrl].splice(highlightIndex, 1);
@@ -111,12 +101,12 @@ async function removeHighlight(highlightIndex, url, alternativeUrl) {
         highlights[url].splice(highlightIndex - alternativeUrlIndexOffset, 1);
     }
 
-    chrome.storage.local.set({ highlights });
+    browser.storage.sync.set({ highlights });
 }
 
 // alternativeUrl is optional
 async function clearPage(url, alternativeUrl) {
-    const { highlights } = await chrome.storage.local.get({ highlights: {} });
+    const { highlights } = await browser.storage.sync.get({ highlights: {} });
 
     delete highlights[url];
     if (alternativeUrl) {
@@ -124,7 +114,7 @@ async function clearPage(url, alternativeUrl) {
         delete highlights[alternativeUrl];
     }
 
-    chrome.storage.local.set({ highlights });
+    browser.storage.sync.set({ highlights });
 }
 
 function elementFromQuery(storedQuery) {
@@ -193,7 +183,7 @@ function escapeCSSString(cssString) {
 export {
     store,
     update,
-    loadAll,
+    getAll,
     load,
     removeHighlight,
     clearPage,

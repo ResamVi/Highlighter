@@ -13,7 +13,7 @@ let changeColorBtnEl = null;
 let deleteBtnEl = null;
 
 function initializeHoverTools() {
-    $.get(chrome.runtime.getURL('src/contentScripts/hoverTools/index.html'), (data) => {
+    $.get(browser.runtime.getURL('src/contentScripts/hoverTools/index.html'), (data) => {
         hoverToolEl = $(data);
         hoverToolEl.hide();
         hoverToolEl[0].addEventListener('mouseenter', onHoverToolMouseEnter);
@@ -142,9 +142,9 @@ function onHoverToolMouseEnter() {
 function onCopyBtnClicked() {
     const highlightId = currentHighlightEl.getAttribute('data-highlight-id');
     const highlights = document.querySelectorAll(`.${HIGHLIGHT_CLASS}[data-highlight-id='${highlightId}']`);
-    const highlightText = Array.from(highlights).map((el) => el.textContent.replace(/\s+/ugm, ' ')).join(''); // clean up whitespace
+    const highlightText = Array.from(highlights).map((el) => el.textContent.replace(/\s+/ugm, ' ')).join('');
     navigator.clipboard.writeText(highlightText);
-    chrome.runtime.sendMessage({ action: 'track-event', trackCategory: 'highlight-action', trackAction: 'copy' });
+    browser.runtime.sendMessage({ action: 'track-event', trackCategory: 'highlight-action', trackAction: 'copy' });
 }
 
 function onDeleteBtnClicked() {
@@ -153,7 +153,7 @@ function onDeleteBtnClicked() {
 
     getHoverToolEl()?.hide();
     hoverToolTimeout = null;
-    chrome.runtime.sendMessage({ action: 'track-event', trackCategory: 'highlight-action', trackAction: 'delete' });
+    browser.runtime.sendMessage({ action: 'track-event', trackCategory: 'highlight-action', trackAction: 'delete' });
 }
 
 
@@ -161,7 +161,7 @@ function onDeleteBtnClicked() {
 function onChangeColorBtnClicked() {
     const highlightId = currentHighlightEl.getAttribute('data-highlight-id');
     updateHighlightColor(highlightId);
-    chrome.runtime.sendMessage({ action: 'track-event', trackCategory: 'highlight-action', trackAction: 'change-color' });
+    browser.runtime.sendMessage({ action: 'track-event', trackCategory: 'highlight-action', trackAction: 'change-color' });
 }
 
 export {

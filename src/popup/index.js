@@ -34,15 +34,15 @@ function colorChanged(colorOption) {
     selectedColorElement.dataset.colorTitle = colorTitle;
 
     // Change the global highlighter color
-    chrome.runtime.sendMessage({ action: 'change-color', color: colorTitle, source: 'popup' });
+    browser.runtime.sendMessage({ action: 'change-color', color: colorTitle, source: 'popup' });
 }
 
 function toggleHighlighterCursor() {
-    chrome.runtime.sendMessage({ action: 'toggle-highlighter-cursor', source: 'popup' }, () => window.close());
+    browser.runtime.sendMessage({ action: 'toggle-highlighter-cursor', source: 'popup' }, () => window.close());
 }
 
 function copyHighlights() {
-    chrome.runtime.sendMessage({ action: 'track-event', trackCategory: 'highlight-action', trackAction: 'copy-all' });
+    browser.runtime.sendMessage({ action: 'track-event', trackCategory: 'highlight-action', trackAction: 'copy-all' });
     navigator.clipboard.writeText(highlightsListElement.innerText);
 
     // Let the user know the copy went through
@@ -114,7 +114,7 @@ function showErrorState() {
         newEl.classList.add('highlight');
         newEl.innerText = highlightText;
         newEl.addEventListener('click', () => {
-            chrome.runtime.sendMessage({ action: 'show-highlight', highlightId });
+            browser.runtime.sendMessage({ action: 'show-highlight', highlightId });
         });
         highlightsListElement.appendChild(newEl);
     });
@@ -143,9 +143,12 @@ function showErrorState() {
     });
 })();
 
-// Retrieve the shortcut for the highlight command from the Chrome settings and display it
+// Retrieve the shortcut for the highlight command.
 (async function initializeShortcutLinkText() {
-    const commands = await chrome.commands.getAll();
+    const commands = await browser.commands.getAll();
+
+    console.log(commands);
+
     commands.forEach((command) => {
         if (command.name === 'execute-highlight') {
             if (command.shortcut) {
@@ -176,7 +179,7 @@ function showErrorState() {
         newDeleteIconEl.classList.add('material-icons', 'delete-icon');
         newDeleteIconEl.innerText = 'delete';
         newDeleteIconEl.onclick = () => {
-            chrome.runtime.sendMessage({ action: 'remove-highlight', highlightId: lostHighlight.index }, () => {
+            browser.runtime.sendMessage({ action: 'remove-highlight', highlightId: lostHighlight.index }, () => {
                 newEl.remove();
                 updateHighlightsListState();
             });
@@ -194,12 +197,11 @@ copyAllButton.addEventListener('click', copyHighlights);
 removeAllButton.addEventListener('click', openRemoveAllModal);
 changeColorButton.addEventListener('click', openChangeColorModal);
 selectedColorElement.addEventListener('click', openChangeColorModal);
-
-shortcutLinkElement.addEventListener('click', () => { // Open the shortcuts Chrome settings page in a new tab
-    chrome.tabs.create({ url: "chrome://extensions/shortcuts" });
+shortcutLinkElement.addEventListener('click', () => { 
+    browser.tabs.create({ url: "https://support.mozilla.org/en-US/kb/manage-extension-shortcuts-firefox" });
 });
 
 closeButton.addEventListener('click', () => window.close());
 
 // Register (in analytics) that the popup was opened
-chrome.runtime.sendMessage({ action: 'track-event', trackCategory: 'popup', trackAction: 'opened' });
+browser.runtime.sendMessage({ action: 'track-event', trackCategory: 'popup', trackAction: 'opened' });

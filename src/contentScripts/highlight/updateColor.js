@@ -16,7 +16,7 @@ function cycleColor(highlightId) {
     const currentColor = highlightEl.style.backgroundColor;
 
     return new Promise((resolve, _reject) => {
-        chrome.runtime.sendMessage({ action: 'get-color-options' }, ({ response: colorOptions }) => {
+        browser.runtime.sendMessage({ action: 'get-color-options' }, ({ response: colorOptions }) => {
             // Find index by color rgb value (returns -1 if nothing found):
             const currentIndex = colorOptions.findIndex((color) => color.color === currentColor);
             const newColorOption = colorOptions[(currentIndex + 1) % colorOptions.length];

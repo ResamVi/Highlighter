@@ -1,6 +1,7 @@
-// Use a dynamic import as a work-around to content scripts not supporting JS modules (ES6)
-(async () => {
-    const src = chrome.runtime.getURL('src/contentScripts/index.js');
-    const contentScript = await import(src);
-    contentScript.initialize();
-})();
+import { initialize } from './src/contentScripts/index.js';
+
+import jQuery from "jquery";
+
+window.$ = jQuery;
+
+initialize();

@@ -1,32 +1,47 @@
 # Highlighter
-A simple chrome extension that allows the highlighting of text on webpages with a simple right-click (or keyboard shortcut Ctrl+Shfit+H). Saves all highlights so they can be re-highlighted when a webpage is reopened!
 
-Available for [download on the Chrome web store](https://chrome.google.com/webstore/detail/highlighter/fdfcjfoifbjplmificlkdfneafllkgmn).
+Firefox port of [jeromepl/highlighter](https://github.com/jeromepl/highlighter)
 
-## Development Set Up
+A simple Firefox extension that allows the highlighting of text on webpages with a simple right-click (or keyboard shortcut Alt+A). 
+Saves all highlights across all devices running Firefox so they can be re-highlighted when a webpage is reopened!
 
-You will need Node.js and [the `gh` cli](https://cli.github.com/) installed (and authenticated).
-Then, run the following:
+![images/preview.gif](images/preview.gif)
+
+Available for [Download in Firefox](TODO)
+
+## Changes in this Fork
+Features
+- Introduces sync storage to work across multiple Firefox devices.
+- Removed telemetry
+
+Technical
+- Fix a bug with Firefox where highlights are shown for a short time and then disappear
+- Introduce permission prompt as Firefox handles host_permissions differently to Chrome
+- Introduce Parcel as workaround for Firefox extensions not supporting static import
+- Drop support for older highlight versions and restart versioning at 1.0.0
+
+## Development
+
+To start development, clone the repo and run
 
 ```sh
 npm install
 ```
 
-Finally, you will need to enter your own Google Analytics account IDs. One for production and one for testing:
+For local development run
 ```sh
-cp config/secrets.sample.js config/secrets.js # Then replace "GA_TRACKING_ID" with your test account ID
-cp config/secrets.sample.js config/secrets.production.js # Then replace the "GA_TRACKING_ID" with your production account ID
+npm run develop
 ```
+Creates a `dist` folder. 
 
-## Other commands:
+In Firefox type `about:debugging` into the address bar. Go to `This Firefox` and in `Load Temporary Add-On` upload a file of the generated `dist` folder.
 
-- Linting (ESLint): `npm run lint`
-- Releasing a new version:
+For a release build run
 ```sh
-# Bump the version in the manifest and package.json files, create a new commit, tag it, push to Github
-# and create a draft release on Github using the `gh` CLI tool
-npm run release
-
-# Create the zipped package to upload to the Chrome web store
 npm run build
 ```
+
+## Other commands
+
+- Linting (ESLint): `npm run lint`
+- Rebuild extension on file change: `npm run watch`
