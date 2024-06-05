@@ -26,11 +26,6 @@ function initialize() {
 
 function initializeContextMenus() {
     browser.runtime.onInstalled.addListener(async ({ reason }) => {
-        // Ask for permissions if newly installed (not when updated).
-        if (reason === 'install') {
-            browser.tabs.create({ url: "src/permissions/permissions.html" });
-        }
-
         // remove existing menu items
         browser.contextMenus.removeAll();
 

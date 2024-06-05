@@ -16,9 +16,9 @@ Features
 
 Technical
 - Fix a bug with Firefox where highlights are shown for a short time and then disappear
-- Introduce permission prompt as Firefox handles host_permissions differently to Chrome
 - Introduce Parcel as workaround for Firefox extensions not supporting static import
 - Drop support for older highlight versions and restart versioning at 1.0.0
+- (If using Manifest V3) Introduce permission prompt as Firefox handles host_permissions differently to Chrome in V3
 
 ## Development
 
