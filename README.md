@@ -7,12 +7,14 @@ Saves all highlights across all devices running Firefox so they can be re-highli
 
 ![images/preview.gif](images/preview.gif)
 
-Available for [Download in Firefox](TODO)
+Available for [Download in Firefox](https://addons.mozilla.org/en-US/firefox/addon/highlighter-by-resamvi)
 
 ## Changes in this Fork
 Features
 - Introduces sync storage to work across multiple Firefox devices.
 - Removed telemetry
+- Decrease highlight opacity so highlighted text is visible on dark mode websites
+- Highlighting works on Single-page applications that change their content (without their URL changing)
 
 Technical
 - Fix a bug with Firefox where highlights are shown for a short time and then disappear
@@ -36,10 +38,18 @@ Creates a `dist` folder.
 
 In Firefox type `about:debugging` into the address bar. Go to `This Firefox` and in `Load Temporary Add-On` upload a file of the generated `dist` folder.
 
-For a release build run
+For a raw build run
 ```sh
 npm run build
 ```
+Which creates an optimized build in a `dist` folder
+
+
+For a release build run
+```sh
+npm run build-xpi
+```
+Which creates an `.xpi` 
 
 ## Other commands
 

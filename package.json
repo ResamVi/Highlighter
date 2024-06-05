@@ -1,6 +1,6 @@
 {
   "name": "highlighter",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Firefox extension to highlight text on websites with a simple right-click or keyboard shortcut. Saves highlights on your device.",
   "repository": "github:resamvi/highlighter",
   "license": "MIT",
@@ -13,10 +13,13 @@
   },
   "scripts": {
     "build": "parcel build manifest.json --config @parcel/config-webextension",
+    "build-xpi": "node scripts/xpi.js",
     "develop": "parcel watch manifest.json --no-hmr --config @parcel/config-webextension",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "release": "node scripts/release.js",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "archiver": "^7.0.1"
   }
 }

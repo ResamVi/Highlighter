@@ -195,7 +195,7 @@ copyAllButton.addEventListener('click', copyHighlights);
 removeAllButton.addEventListener('click', openRemoveAllModal);
 changeColorButton.addEventListener('click', openChangeColorModal);
 selectedColorElement.addEventListener('click', openChangeColorModal);
-shortcutLinkElement.addEventListener('click', () => { 
+shortcutLinkElement.addEventListener('click', () => {
     browser.tabs.create({ url: "https://support.mozilla.org/en-US/kb/manage-extension-shortcuts-firefox" });
 });
 

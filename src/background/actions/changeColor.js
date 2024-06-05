@@ -1,4 +1,4 @@
-function changeColor(colorTitle, textColor = '#000000') {
+function changeColor(colorTitle) {
     if (!colorTitle) return;
 
     browser.storage.sync.set({ color: colorTitle });

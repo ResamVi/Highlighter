@@ -25,7 +25,7 @@ function initialize() {
 
 
 function initializeContextMenus() {
-    browser.runtime.onInstalled.addListener(async ({ reason }) => {
+    browser.runtime.onInstalled.addListener(async () => {
         // remove existing menu items
         browser.contextMenus.removeAll();
 
@@ -72,6 +72,37 @@ function initializeTabEventListeners() {
             loadPageHighlights(tabId);
         }
     });
+
+    // If the HTML has significant changes, try again to highlight
+    // Some Single-page applications change text without the reloading/URL changing.
+    // We should support this as well.
+    // const targetNode = document.body;
+    //
+    // // Options for the observer (which mutations to observe)
+    // const config = { attributes: true, childList: true, subtree: true };
+    //
+    // const callback = (mutationList, _observer) => {
+    //     console.log(mutationList);
+    //
+    //     for (const mutation of mutationList) {
+    //         if (mutation.type === "childList") {
+    //             console.log("A child node has been added or removed.");
+    //         } else if (mutation.type === "attributes") {
+    //             console.log(`The ${mutation.attributeName} attribute was modified.`);
+    //         }
+    //     }
+    // };
+    //
+    // // Create an observer instance linked to the callback function
+    // const observer = new MutationObserver(callback);
+    //
+    // // Start observing the target node for configured mutations
+    // observer.observe(targetNode, config);
+
+    // $(document).live("onchange",function()
+    // {
+    //     // blah?
+    // });
 }
 
 function initializeKeyboardShortcutEventListeners() {
