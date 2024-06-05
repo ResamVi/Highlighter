@@ -147,8 +147,6 @@ function showErrorState() {
 (async function initializeShortcutLinkText() {
     const commands = await browser.commands.getAll();
 
-    console.log(commands);
-
     commands.forEach((command) => {
         if (command.name === 'execute-highlight') {
             if (command.shortcut) {
