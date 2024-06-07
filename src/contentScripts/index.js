@@ -2,11 +2,6 @@ import * as api from './api.js';
 import { initializeHighlighterCursor } from './highlighterCursor/index.js';
 import { initializeHoverTools } from './hoverTools/index.js';
 
-const UPDATE_INTERVAL = 3 * 1000; // 3 seconds
-
-// Don't react to all changes by taking a 3 second break from the last reaction.
-let last = Date.now();
-
 function initialize() {
     initializeHoverTools();
     initializeHighlighterCursor();
@@ -19,20 +14,25 @@ function exposeAPI() {
     window.highlighterAPI = api;
 }
 
+var queue = [];
 
-// If the HTML has DOM changes that may change the text, try again to highlight.
+// If the DOM changes, this may affect text -> try again to highlight.
 //
-// Some Single-page applications change text without the reloading/URL changing.
+// Some Single-page applications change text without reloading or changing the URL.
 // We should support this as well.
 function detectChanges() {
-    const observer = new MutationObserver(() => {
-        if(Date.now() - last >= UPDATE_INTERVAL) {
+    // DOM changes may occur a lot, so throttle to every 3s.
+    setInterval(() => {
+        if(queue.length > 0) {
             window.highlighterAPI.highlights.loadAll();
-            last = Date.now();
+            queue = [];
         }
-    });
+    }, 3000);
 
-    // Start observing the target node for configured mutations
+    // Start observing the whole DOM for changes and add to queue for the thread to process.
+    const observer = new MutationObserver(() => {
+        queue.push(Date.now());
+    });
     observer.observe(document.body, { attributes: false, childList: true, subtree: true});
 }
 
