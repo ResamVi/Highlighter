@@ -11,7 +11,8 @@ Available for [Download in Firefox](https://addons.mozilla.org/en-US/firefox/add
 
 ## Changes in this Fork
 Features
-- Introduces sync storage to work across multiple Firefox devices.
+- ~~Introduces sync storage to work across multiple Firefox devices.~~
+    - Sync storage is too limited. Feature is removed.
 - Removed telemetry
 - Decrease highlight opacity so highlighted text is visible on dark mode websites
 - Highlighting works on Single-page applications that change their content (without their URL changing)

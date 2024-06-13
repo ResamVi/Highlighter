@@ -8,7 +8,7 @@ const STORE_FORMAT_VERSION = browser.runtime.getManifest().version;
 const alternativeUrlIndexOffset = 0; // Number of elements stored in the alternativeUrl Key. Used to map highlight indices to correct key
 
 async function store(selection, container, url, href, color, textColor) {
-    const { highlights } = await browser.storage.sync.get({ highlights: {} });
+    const { highlights } = await browser.storage.local.get({ highlights: {} });
 
     if (!highlights[url]) highlights[url] = [];
 
@@ -26,14 +26,14 @@ async function store(selection, container, url, href, color, textColor) {
         uuid: crypto.randomUUID(),
         createdAt: Date.now(),
     });
-    browser.storage.sync.set({ highlights });
+    browser.storage.local.set({ highlights });
 
     // Return the index of the new highlight:
     return count - 1 + alternativeUrlIndexOffset;
 }
 
 async function update(highlightIndex, url, alternativeUrl, newColor, newTextColor) {
-    const { highlights } = await browser.storage.sync.get({ highlights: {} });
+    const { highlights } = await browser.storage.local.get({ highlights: {} });
 
     let urlToUse = url;
     let indexToUse = highlightIndex - alternativeUrlIndexOffset;
@@ -49,13 +49,13 @@ async function update(highlightIndex, url, alternativeUrl, newColor, newTextColo
             highlightObject.color = newColor;
             highlightObject.textColor = newTextColor;
             highlightObject.updatedAt = Date.now();
-            browser.storage.sync.set({ highlights });
+            browser.storage.local.set({ highlights });
         }
     }
 }
 
 async function getAll(url) {
-    const result = await browser.storage.sync.get({ highlights: {} });
+    const result = await browser.storage.local.get({ highlights: {} });
     const highlights = result.highlights[url];
 
     if (!highlights) return;
@@ -93,7 +93,7 @@ function load(highlightVal, highlightIndex, noErrorTracking) {
 }
 
 async function removeHighlight(highlightIndex, url, alternativeUrl) {
-    const { highlights } = await browser.storage.sync.get({ highlights: {} });
+    const { highlights } = await browser.storage.local.get({ highlights: {} });
 
     if (highlightIndex < alternativeUrlIndexOffset) {
         highlights[alternativeUrl].splice(highlightIndex, 1);
@@ -101,12 +101,12 @@ async function removeHighlight(highlightIndex, url, alternativeUrl) {
         highlights[url].splice(highlightIndex - alternativeUrlIndexOffset, 1);
     }
 
-    browser.storage.sync.set({ highlights });
+    browser.storage.local.set({ highlights });
 }
 
 // alternativeUrl is optional
 async function clearPage(url, alternativeUrl) {
-    const { highlights } = await browser.storage.sync.get({ highlights: {} });
+    const { highlights } = await browser.storage.local.get({ highlights: {} });
 
     delete highlights[url];
     if (alternativeUrl) {
@@ -114,7 +114,7 @@ async function clearPage(url, alternativeUrl) {
         delete highlights[alternativeUrl];
     }
 
-    browser.storage.sync.set({ highlights });
+    browser.storage.local.set({ highlights });
 }
 
 function elementFromQuery(storedQuery) {
