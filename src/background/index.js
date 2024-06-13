@@ -16,11 +16,39 @@ import { wrapResponse } from './utils.js';
 
 
 function initialize() {
+    initializeKey();
     initializeContextMenus();
     initializeContextMenuEventListeners();
     initializeTabEventListeners();
     initializeKeyboardShortcutEventListeners();
     initializeMessageEventListeners();
+}
+
+async function generateKey() {
+    return await crypto.subtle.generateKey({ name: 'AES-CBC', length: 128 }, false, ['encrypt', 'decrypt']);
+}
+
+async function encrypt() {
+
+}
+
+async function decrypt() {
+
+}
+
+function initializeKey() {
+    browser.storage.local.get(["uuid","key"]).then(async items => {
+        console.log(items);
+
+        if(items.uuid === undefined) {
+            browser.storage.local.set({ uuid: crypto.randomUUID() });
+        }
+
+        if(items.key === undefined) {
+            const key = await generateKey();
+            browser.storage.local.set({ key: key });
+        }
+    });
 }
 
 
