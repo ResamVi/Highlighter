@@ -2,6 +2,8 @@ import { addHighlightError } from './errorManager.js';
 
 import { highlight } from '../highlight/index.js';
 
+import CryptoJS from "crypto-js";
+
 const STORE_FORMAT_VERSION = browser.runtime.getManifest().version;
 
 // TODO: Still needed?
@@ -26,6 +28,21 @@ async function store(selection, container, url, href, color, textColor) {
         uuid: crypto.randomUUID(),
         createdAt: Date.now(),
     });
+
+    const { uuid, key } = await browser.storage.sync.get(["uuid", "key"]);
+    console.log(uuid);
+    console.log(key);
+
+    // Encrypt
+    var ciphertext = CryptoJS.AES.encrypt('my message', 'secret key 123').toString();
+    console.log(ciphertext);
+
+    // Decrypt
+    var bytes = CryptoJS.AES.decrypt(ciphertext, 'secret key 123');
+    var originalText = bytes.toString(CryptoJS.enc.Utf8);
+
+    console.log(originalText); // 'my message'
+
     browser.storage.local.set({ highlights });
 
     // Return the index of the new highlight:

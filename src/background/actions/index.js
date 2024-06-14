@@ -10,3 +10,4 @@ export { default as editColor } from './editColor.js';
 export { default as getCurrentColor } from './getCurrentColor.js';
 export { default as getColorOptions } from './getColorOptions.js';
 export { default as loadPageHighlights } from './loadPageHighlights.js';
+export { encrypt, decrypt, generateKey } from './encrypt.js';

@@ -11,9 +11,9 @@ import {
     removeHighlights,
     showHighlight,
     toggleHighlighterCursor,
+    generateKey,
 } from './actions/index.js';
 import { wrapResponse } from './utils.js';
-
 
 function initialize() {
     initializeKey();
@@ -24,84 +24,28 @@ function initialize() {
     initializeMessageEventListeners();
 }
 
-const CRYPTO_ALGORITHM = 'AES-GCM';
-
-async function generateKey() {
-    return await crypto.subtle.generateKey({ name: CRYPTO_ALGORITHM, length: 128 }, false, ['encrypt', 'decrypt']);
-}
-
-async function encrypt(key, message) {
-    // Reuse IV because there is no damage in knowing that two ciphertexts came from the same plaintext.
-    const buffer = await crypto.subtle.encrypt(
-        { name: CRYPTO_ALGORITHM, iv: new Uint8Array(12) },
-        key,
-        new TextEncoder().encode(message),
-    );
-
-    return buffer;
-}
-
-async function decrypt(key, message) {
-    // Reuse IV because there is no damage in knowing that two ciphertexts came from the same plaintext.
-    const buffer = await crypto.subtle.decrypt(
-        { name: CRYPTO_ALGORITHM, iv: new Uint8Array(12) },
-        key,
-        message,
-    );
-
-    return new TextDecoder().decode(buffer);
-}
-
-function _arrayBufferToBase64( buffer ) {
-    var binary = '';
-    var bytes = new Uint8Array( buffer );
-    var len = bytes.byteLength;
-    for (var i = 0; i < len; i++) {
-        binary += String.fromCharCode( bytes[ i ] );
-    }
-    return window.btoa( binary );
-}
-
-function base64ToArrayBuffer(base64) {
-    var binaryString = atob(base64);
-    var bytes = new Uint8Array(binaryString.length);
-    for (var i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-    }
-    return bytes.buffer;
-}
 
 function initializeKey() {
-    browser.storage.local.get(["uuid", "key"]).then(async (items) => {
+    browser.storage.sync.get(["uuid", "key"]).then(async (items) => {
         if(items.uuid === undefined) {
-            browser.storage.local.set({ uuid: crypto.randomUUID() });
+            browser.storage.sync.set({ uuid: crypto.randomUUID() });
         }
 
         if(items.key === undefined) {
-            const key = await generateKey();
-            browser.storage.local.set({ key: key });
+            browser.storage.sync.set({ key: crypto.randomUUID() });
 
-            const ciphertext = await encrypt(key, "Hello World");
-
-            const hin = _arrayBufferToBase64(ciphertext);
-            const zurueck = base64ToArrayBuffer(hin);
-
-            const plaintext = await decrypt(key, zurueck);
-
-            console.log(plaintext);
+            // const ciphertext = await encrypt(key, "Hello World");
+            //
+            // const hin = arrayBufferToBase64(ciphertext);
+            // const zurueck = base64ToArrayBuffer(hin);
+            //
+            // const plaintext = await decrypt(key, zurueck);
+            //
+            // console.log(plaintext);
         }
+
+        console.log("initialized");
     });
-
-        // browser.storage.local.get(["uuid","key"]).then(async (items) => {
-        //     console.log("trying encryption");
-        //     console.log(items);
-        //     console.log(items.uuid);
-        //     console.log(items.key);
-        //
-        // });
-
-    // setTimeout(() => {
-    // }, 1000);
 }
 
 
