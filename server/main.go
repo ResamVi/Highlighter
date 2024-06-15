@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log/slog"
 	"net/http"
 
@@ -9,15 +10,27 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 
 	_ "github.com/lib/pq"
+    	"github.com/caarlos0/env/v11"
 )
 
-func main() {
-    connStr := "postgresql://postgres:postgres@localhost:5432/postgres?sslmode=disable"
+type config struct {
+    DB_URL string `env:"DB_URL" envDefault:"postgresql://postgres:postgres@localhost:5432/postgres?sslmode=disable"`
+    WEBHOOK_URL string `env:"WEBHOOK_URL"`
+}
 
-    db, err := sql.Open("postgres", connStr)
+func main() {
+    cfg, err := env.ParseAs[config]()
     if err != nil {
-        slog.Error(err.Error())
         panic(err)
+    }
+
+    d := discord {
+        url: cfg.WEBHOOK_URL,
+    }
+
+    db, err := sql.Open("postgres", cfg.DB_URL)
+    if err != nil {
+        d.panic(err)
     }
 
     app := fiber.New()
@@ -31,17 +44,32 @@ func main() {
         case nil:
             break
         case sql.ErrNoRows:
-            slog.Info("No rows were returned!")
+            d.log(err.Error())
             return c.SendStatus(http.StatusNotFound)
         default:
-            slog.Error(err.Error())
+            d.log(err.Error())
             return c.SendStatus(http.StatusInternalServerError)
         }
+
+        d.log(c.Method() + " " + c.Path())
 
         return c.SendString(highlights)
     })
     app.Post("/v1/:uuid", func(c *fiber.Ctx) error {
-        return c.SendString("Hello, World!")
+        query := `INSERT INTO highlights (uuid, highlights) VALUES ($1, $2) ON CONFLICT (uuid) DO UPDATE SET highlights = EXCLUDED.highlights`
+
+        fmt.Println(c.Params("uuid"))
+        fmt.Println(string(c.Body()))
+
+        _, err = db.Exec(query, c.Params("uuid"), c.Body())
+        if err != nil {
+            slog.Error(err.Error())
+            return c.SendStatus(http.StatusInternalServerError)
+        }
+
+        d.log(c.Method() + " " + c.Path() + " " + string(c.Body()))
+
+        return c.Send(c.Body())
     })
 
     slog.Info("Server started")
