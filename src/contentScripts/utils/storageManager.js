@@ -1,8 +1,8 @@
 import { addHighlightError } from './errorManager.js';
 
+import { SERVER_URL } from '../highlight/highlight/constants.js';
 import { highlight } from '../highlight/index.js';
 
-import CryptoJS from "crypto-js";
 
 const STORE_FORMAT_VERSION = browser.runtime.getManifest().version;
 
@@ -10,7 +10,11 @@ const STORE_FORMAT_VERSION = browser.runtime.getManifest().version;
 const alternativeUrlIndexOffset = 0; // Number of elements stored in the alternativeUrl Key. Used to map highlight indices to correct key
 
 async function store(selection, container, url, href, color, textColor) {
-    const { highlights } = await browser.storage.local.get({ highlights: {} });
+    // const { highlights } = await browser.storage.local.get({ highlights: {} });
+
+    const { uuid } = await browser.storage.sync.get("uuid");
+    const response = await fetch(`${SERVER_URL}/${uuid}`);
+    const highlights = await response.json();
 
     if (!highlights[url]) highlights[url] = [];
 
@@ -29,28 +33,26 @@ async function store(selection, container, url, href, color, textColor) {
         createdAt: Date.now(),
     });
 
-    const { uuid, key } = await browser.storage.sync.get(["uuid", "key"]);
-    console.log(uuid);
-    console.log(key);
+    // browser.storage.local.set({ highlights });
 
-    // Encrypt
-    var ciphertext = CryptoJS.AES.encrypt('my message', 'secret key 123').toString();
-    console.log(ciphertext);
-
-    // Decrypt
-    var bytes = CryptoJS.AES.decrypt(ciphertext, 'secret key 123');
-    var originalText = bytes.toString(CryptoJS.enc.Utf8);
-
-    console.log(originalText); // 'my message'
-
-    browser.storage.local.set({ highlights });
+    await fetch(`${SERVER_URL}/${uuid}`, {
+        method: "POST",
+        body: JSON.stringify(highlights),
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
 
     // Return the index of the new highlight:
     return count - 1 + alternativeUrlIndexOffset;
 }
 
 async function update(highlightIndex, url, alternativeUrl, newColor, newTextColor) {
-    const { highlights } = await browser.storage.local.get({ highlights: {} });
+    // const { highlights } = await browser.storage.local.get({ highlights: {} });
+
+    const { uuid } = await browser.storage.sync.get("uuid");
+    const response = await fetch(`${SERVER_URL}/${uuid}`);
+    const highlights = await response.json();
 
     let urlToUse = url;
     let indexToUse = highlightIndex - alternativeUrlIndexOffset;
@@ -66,14 +68,27 @@ async function update(highlightIndex, url, alternativeUrl, newColor, newTextColo
             highlightObject.color = newColor;
             highlightObject.textColor = newTextColor;
             highlightObject.updatedAt = Date.now();
-            browser.storage.local.set({ highlights });
+            // browser.storage.local.set({ highlights });
+
+            await fetch(`${SERVER_URL}/${uuid}`, {
+                method: "POST",
+                body: JSON.stringify(highlights),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
         }
     }
 }
 
 async function getAll(url) {
-    const result = await browser.storage.local.get({ highlights: {} });
-    const highlights = result.highlights[url];
+    // const result = await browser.storage.local.get({ highlights: {} });
+
+    const { uuid } = await browser.storage.sync.get("uuid");
+    const response = await fetch(`${SERVER_URL}/${uuid}`);
+    const result = await response.json();
+
+    const highlights = result[url];
 
     if (!highlights) return;
 
@@ -110,7 +125,11 @@ function load(highlightVal, highlightIndex, noErrorTracking) {
 }
 
 async function removeHighlight(highlightIndex, url, alternativeUrl) {
-    const { highlights } = await browser.storage.local.get({ highlights: {} });
+    // const { highlights } = await browser.storage.local.get({ highlights: {} });
+
+    const { uuid } = await browser.storage.sync.get("uuid");
+    const response = await fetch(`${SERVER_URL}/${uuid}`);
+    const highlights = await response.json();
 
     if (highlightIndex < alternativeUrlIndexOffset) {
         highlights[alternativeUrl].splice(highlightIndex, 1);
@@ -118,12 +137,24 @@ async function removeHighlight(highlightIndex, url, alternativeUrl) {
         highlights[url].splice(highlightIndex - alternativeUrlIndexOffset, 1);
     }
 
-    browser.storage.local.set({ highlights });
+    // browser.storage.local.set({ highlights });
+
+    await fetch(`${SERVER_URL}/${uuid}`, {
+        method: "POST",
+        body: JSON.stringify(highlights),
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
 }
 
 // alternativeUrl is optional
 async function clearPage(url, alternativeUrl) {
-    const { highlights } = await browser.storage.local.get({ highlights: {} });
+    // const { highlights } = await browser.storage.local.get({ highlights: {} });
+
+    const { uuid } = await browser.storage.sync.get("uuid");
+    const response = await fetch(`${SERVER_URL}/${uuid}`);
+    const highlights = await response.json();
 
     delete highlights[url];
     if (alternativeUrl) {
@@ -131,7 +162,16 @@ async function clearPage(url, alternativeUrl) {
         delete highlights[alternativeUrl];
     }
 
-    browser.storage.local.set({ highlights });
+    // browser.storage.local.set({ highlights });
+
+    await fetch(`${SERVER_URL}/${uuid}`, {
+        method: "POST",
+        body: JSON.stringify(highlights),
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+
 }
 
 function elementFromQuery(storedQuery) {

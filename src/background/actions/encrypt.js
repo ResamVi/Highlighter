@@ -46,3 +46,28 @@ function base64ToArrayBuffer(base64) {
 }
 
 export { generateKey, encrypt, decrypt };
+
+            // const ciphertext = await encrypt(key, "Hello World");
+            //
+            // const hin = arrayBufferToBase64(ciphertext);
+            // const zurueck = base64ToArrayBuffer(hin);
+            //
+            // const plaintext = await decrypt(key, zurueck);
+            //
+            // console.log(plaintext);
+//
+// import CryptoJS from "crypto-js";
+//     const { uuid, key } = await browser.storage.sync.get(["uuid", "key"]);
+    // console.log(uuid);
+    // console.log(key);
+    //
+    // // Encrypt
+    // var ciphertext = CryptoJS.AES.encrypt('my message', 'secret key 123').toString();
+    // console.log(ciphertext);
+    //
+    // // Decrypt
+    // var bytes = CryptoJS.AES.decrypt(ciphertext, 'secret key 123');
+    // var originalText = bytes.toString(CryptoJS.enc.Utf8);
+    //
+    // console.log(originalText); // 'my message'
+

@@ -10,7 +10,7 @@ async function editColor(colorTitle, color, textColor) {
         delete colorOption.textColor;
     }
 
-    browser.storage.local.set({ colors: colorOptions });
+    browser.storage.sync.set({ colors: colorOptions });
 }
 
 export default editColor;

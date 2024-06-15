@@ -55,11 +55,9 @@ func main() {
 
         return c.SendString(highlights)
     })
+
     app.Post("/v1/:uuid", func(c *fiber.Ctx) error {
         query := `INSERT INTO highlights (uuid, highlights) VALUES ($1, $2) ON CONFLICT (uuid) DO UPDATE SET highlights = EXCLUDED.highlights`
-
-        fmt.Println(c.Params("uuid"))
-        fmt.Println(string(c.Body()))
 
         _, err = db.Exec(query, c.Params("uuid"), c.Body())
         if err != nil {

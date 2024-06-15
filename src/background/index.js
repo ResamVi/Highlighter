@@ -11,7 +11,6 @@ import {
     removeHighlights,
     showHighlight,
     toggleHighlighterCursor,
-    generateKey,
 } from './actions/index.js';
 import { wrapResponse } from './utils.js';
 
@@ -33,18 +32,7 @@ function initializeKey() {
 
         if(items.key === undefined) {
             browser.storage.sync.set({ key: crypto.randomUUID() });
-
-            // const ciphertext = await encrypt(key, "Hello World");
-            //
-            // const hin = arrayBufferToBase64(ciphertext);
-            // const zurueck = base64ToArrayBuffer(hin);
-            //
-            // const plaintext = await decrypt(key, zurueck);
-            //
-            // console.log(plaintext);
         }
-
-        console.log("initialized");
     });
 }
 

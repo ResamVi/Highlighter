@@ -3,7 +3,7 @@ import getColorOptions from './getColorOptions.js';
 import { DEFAULT_COLOR_TITLE } from '../constants.js';
 
 async function getCurrentColor() {
-    const { color } = await browser.storage.local.get("color");
+    const { color } = await browser.storage.sync.get("color");
     const colorTitle = color || DEFAULT_COLOR_TITLE;
     const colorOptions = await getColorOptions();
     return colorOptions.find((colorOption) => colorOption.title === colorTitle) || colorOptions[0];
