@@ -8,12 +8,12 @@ services:
       - DB_URL=postgresql://postgres:postgres@postgres:5432/postgres?sslmode=disable
       - WEBHOOK_URL=https://discord.com/api/webhooks/12...
     ports:
-      - "3000:3000"
+      - "3377:3377"
   postgres:
     image: postgres:latest
     restart: always
     ports:
-      - 5432:5432
+      - 5433:5432
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/1-schema.sql

@@ -1,0 +1,24 @@
+name: Deploy server
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@master
+      env:
+        WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: ${{ secrets.PORT }}
+        envs: WEBHOOK_URL
+        script: |
+          git clone git@github.com:ResamVi/highlighter.git repo
+          docker-compose -p highlighter -f repo/server/docker-compose.yml up --detach --build --force-recreate
+          rm -rf repo
