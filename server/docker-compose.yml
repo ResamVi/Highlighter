@@ -5,22 +5,22 @@ services:
     build: ./
     restart: always
     environment:
-      - DB_URL=postgresql://postgres:postgres@postgres:5432/postgres?sslmode=disable
-      - WEBHOOK_URL=https://discord.com/api/webhooks/12...
+      - DB_URL=${DB_URL:-postgresql://postgres:postgres@postgres:5432/postgres?sslmode=disable}
+      - WEBHOOK_URL=${WEBHOOK_URL}
     ports:
-      - "3377:3377"
+      - "127.0.0.1:3377:3377"
   postgres:
     image: postgres:latest
     restart: always
     ports:
-      - 5433:5432
+      - 127.0.0.1:5433:5432
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/1-schema.sql
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
 
 volumes:
   postgres_data:

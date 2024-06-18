@@ -14,8 +14,12 @@ import {
 } from './actions/index.js';
 import { wrapResponse } from './utils.js';
 
+import { SERVER_URL } from '../contentScripts/highlight/highlight/constants.js';
+
+
 function initialize() {
     initializeKey();
+    initializeStorage();
     initializeContextMenus();
     initializeContextMenuEventListeners();
     initializeTabEventListeners();
@@ -25,7 +29,7 @@ function initialize() {
 
 
 function initializeKey() {
-    browser.storage.sync.get(["uuid", "key"]).then(async (items) => {
+    browser.storage.sync.get(["uuid", "key"]).then((items) => {
         if(items.uuid === undefined) {
             browser.storage.sync.set({ uuid: crypto.randomUUID() });
         }
@@ -34,6 +38,16 @@ function initializeKey() {
             browser.storage.sync.set({ key: crypto.randomUUID() });
         }
     });
+}
+
+function initializeStorage() {
+    browser.storage.sync.get(["uuid"]).then(async ({ uuid }) => {
+        const response = await fetch(`${SERVER_URL}/${uuid}`);
+        const highlights = await response.json();
+        browser.storage.local.set({ highlights });
+        console.log("initialization finished");
+    });
+    console.log("initStorage done");
 }
 
 

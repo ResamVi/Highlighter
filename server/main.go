@@ -75,10 +75,11 @@ func (s server) Get(c *fiber.Ctx) error {
     case nil:
         break
     case sql.ErrNoRows:
+        // TODO: insert new row here
         return c.JSON(fiber.Map{})
     default:
         s.discord.log(err.Error())
-        return c.SendStatus(http.StatusInternalServerError)
+        return fiber.NewError(http.StatusInternalServerError, err.Error())
     }
 
     c.Response().Header.Set("Content-Type", "application/json")
@@ -91,7 +92,7 @@ func (s server) Post(c *fiber.Ctx) error {
     _, err := s.db.Exec(query, c.Params("uuid"), c.Body())
     if err != nil {
         slog.Error(err.Error())
-        return c.SendStatus(http.StatusInternalServerError)
+        return fiber.NewError(http.StatusInternalServerError, err.Error())
     }
 
     return c.Send(c.Body())

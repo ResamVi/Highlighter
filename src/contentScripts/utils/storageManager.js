@@ -10,11 +10,12 @@ const STORE_FORMAT_VERSION = browser.runtime.getManifest().version;
 const alternativeUrlIndexOffset = 0; // Number of elements stored in the alternativeUrl Key. Used to map highlight indices to correct key
 
 async function store(selection, container, url, href, color, textColor) {
-    // const { highlights } = await browser.storage.local.get({ highlights: {} });
+    console.log("store: get");
+    const { highlights } = await browser.storage.local.get({ highlights: {} });
 
     const { uuid } = await browser.storage.sync.get("uuid");
-    const response = await fetch(`${SERVER_URL}/${uuid}`);
-    const highlights = await response.json();
+    // const response = await fetch(`${SERVER_URL}/${uuid}`);
+    // const highlights = await response.json();
 
     if (!highlights[url]) highlights[url] = [];
 
@@ -48,11 +49,12 @@ async function store(selection, container, url, href, color, textColor) {
 }
 
 async function update(highlightIndex, url, alternativeUrl, newColor, newTextColor) {
-    // const { highlights } = await browser.storage.local.get({ highlights: {} });
+    console.log("update: get");
+    const { highlights } = await browser.storage.local.get({ highlights: {} });
 
     const { uuid } = await browser.storage.sync.get("uuid");
-    const response = await fetch(`${SERVER_URL}/${uuid}`);
-    const highlights = await response.json();
+    // const response = await fetch(`${SERVER_URL}/${uuid}`);
+    // const highlights = await response.json();
 
     let urlToUse = url;
     let indexToUse = highlightIndex - alternativeUrlIndexOffset;
@@ -82,11 +84,12 @@ async function update(highlightIndex, url, alternativeUrl, newColor, newTextColo
 }
 
 async function getAll(url) {
-    // const result = await browser.storage.local.get({ highlights: {} });
+    console.log("getAll: get");
+    const result = await browser.storage.local.get({ highlights: {} });
 
-    const { uuid } = await browser.storage.sync.get("uuid");
-    const response = await fetch(`${SERVER_URL}/${uuid}`);
-    const result = await response.json();
+    // const { uuid } = await browser.storage.sync.get("uuid");
+    // const response = await fetch(`${SERVER_URL}/${uuid}`);
+    // const result = await response.json();
 
     const highlights = result[url];
 
@@ -125,11 +128,12 @@ function load(highlightVal, highlightIndex, noErrorTracking) {
 }
 
 async function removeHighlight(highlightIndex, url, alternativeUrl) {
-    // const { highlights } = await browser.storage.local.get({ highlights: {} });
+    console.log("removeHighlight: get");
+    const { highlights } = await browser.storage.local.get({ highlights: {} });
 
     const { uuid } = await browser.storage.sync.get("uuid");
-    const response = await fetch(`${SERVER_URL}/${uuid}`);
-    const highlights = await response.json();
+    // const response = await fetch(`${SERVER_URL}/${uuid}`);
+    // const highlights = await response.json();
 
     if (highlightIndex < alternativeUrlIndexOffset) {
         highlights[alternativeUrl].splice(highlightIndex, 1);
