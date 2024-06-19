@@ -44,6 +44,9 @@ function initializeStorage() {
     browser.storage.sync.get(["uuid"]).then(async ({ uuid }) => {
         const response = await fetch(`${SERVER_URL}/${uuid}`);
         const highlights = await response.json();
+
+        console.log(highlights);
+
         browser.storage.local.set({ highlights });
         console.log("initialization finished");
     });

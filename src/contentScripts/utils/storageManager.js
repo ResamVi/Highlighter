@@ -34,7 +34,7 @@ async function store(selection, container, url, href, color, textColor) {
         createdAt: Date.now(),
     });
 
-    // browser.storage.local.set({ highlights });
+    browser.storage.local.set({ highlights });
 
     await fetch(`${SERVER_URL}/${uuid}`, {
         method: "POST",
@@ -70,7 +70,8 @@ async function update(highlightIndex, url, alternativeUrl, newColor, newTextColo
             highlightObject.color = newColor;
             highlightObject.textColor = newTextColor;
             highlightObject.updatedAt = Date.now();
-            // browser.storage.local.set({ highlights });
+
+            browser.storage.local.set({ highlights });
 
             await fetch(`${SERVER_URL}/${uuid}`, {
                 method: "POST",
@@ -85,18 +86,18 @@ async function update(highlightIndex, url, alternativeUrl, newColor, newTextColo
 
 async function getAll(url) {
     console.log("getAll: get");
-    const result = await browser.storage.local.get({ highlights: {} });
+    const { highlights } = await browser.storage.local.get({ highlights: {} });
 
     // const { uuid } = await browser.storage.sync.get("uuid");
     // const response = await fetch(`${SERVER_URL}/${uuid}`);
     // const result = await response.json();
 
-    const highlights = result[url];
+    const result = highlights[url];
 
-    if (!highlights) return;
+    if (!result) return;
 
-    for (let i = 0; i < highlights.length; i++) {
-        load(highlights[i], i);
+    for (let i = 0; i < result.length; i++) {
+        load(result[i], i);
     }
 }
 
@@ -141,7 +142,7 @@ async function removeHighlight(highlightIndex, url, alternativeUrl) {
         highlights[url].splice(highlightIndex - alternativeUrlIndexOffset, 1);
     }
 
-    // browser.storage.local.set({ highlights });
+    browser.storage.local.set({ highlights });
 
     await fetch(`${SERVER_URL}/${uuid}`, {
         method: "POST",
@@ -154,11 +155,11 @@ async function removeHighlight(highlightIndex, url, alternativeUrl) {
 
 // alternativeUrl is optional
 async function clearPage(url, alternativeUrl) {
-    // const { highlights } = await browser.storage.local.get({ highlights: {} });
+    const { highlights } = await browser.storage.local.get({ highlights: {} });
 
     const { uuid } = await browser.storage.sync.get("uuid");
-    const response = await fetch(`${SERVER_URL}/${uuid}`);
-    const highlights = await response.json();
+    // const response = await fetch(`${SERVER_URL}/${uuid}`);
+    // const highlights = await response.json();
 
     delete highlights[url];
     if (alternativeUrl) {
@@ -166,7 +167,7 @@ async function clearPage(url, alternativeUrl) {
         delete highlights[alternativeUrl];
     }
 
-    // browser.storage.local.set({ highlights });
+    browser.storage.local.set({ highlights });
 
     await fetch(`${SERVER_URL}/${uuid}`, {
         method: "POST",
