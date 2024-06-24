@@ -23,6 +23,17 @@ Technical
 - Drop support for older highlight versions and restart versioning at 1.0.0
 - (If using Manifest V3) Introduce permission prompt as Firefox handles host_permissions differently to Chrome in V3
 
+TODOs
+- Context Menu entry
+- Choose color button not working
+- Introduce metrics on server side
+- Log server errors with inputs/outputs
+- Log client request failures 
+- Introduce Export function?
+- Encrypt body
+- Double click highlighted paragraphs cannot be 
+
+
 ## Development
 
 To start development, clone the repo and run
