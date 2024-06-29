@@ -24,6 +24,7 @@ Technical
 - (If using Manifest V3) Introduce permission prompt as Firefox handles host_permissions differently to Chrome in V3
 
 TODOs
+- 100% CPU due to 'Reflow' and a memory leak probably (https://developer.mozilla.org/en-US/docs/Glossary/Reflow)
 - Context Menu entry
 - Choose color button not working
 - Introduce metrics on server side
